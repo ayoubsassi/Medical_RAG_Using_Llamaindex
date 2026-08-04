@@ -1,4 +1,5 @@
-from llama_index.core import SimpleDirectoryReader, Document
+import os
+from llama_index.core import SimpleDirectoryReader
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.extractors import TitleExtractor
@@ -6,8 +7,17 @@ from llama_index.core.ingestion import IngestionPipeline, IngestionCache
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.core import VectorStoreIndex
 import qdrant_client
+from dotenv import load_dotenv
 
-client = qdrant_client.QdrantClient(location=":memory:")
+load_dotenv()   # reads .env into os.environ
+
+
+#client = qdrant_client.QdrantClient(location=":memory:")  
+client = qdrant_client.QdrantClient(   
+    url=os.environ["QDRANT_URL"],
+    api_key=os.environ["QDRANT_API_KEY"]
+    )  
+
 vector_store = QdrantVectorStore(client=client, collection_name="test_store")
 
 #Data loading
@@ -41,6 +51,9 @@ pipeline = IngestionPipeline(
 )
 
 # Ingest directly into a vector db
-pipeline.run(documents=documents)
+pipeline.run(documents=documents, show_progress=True)
 
 index = VectorStoreIndex.from_vector_store(vector_store, embed_model=embed_model)
+
+print("Points stored in Qdrant:", client.get_collection("test_store").points_count)
+print("Ingestion complete.")
