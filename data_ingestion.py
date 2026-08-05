@@ -43,7 +43,7 @@ embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-
 # create the pipeline with transformations
 pipeline = IngestionPipeline(
     transformations=[
-        SentenceSplitter(chunk_size=512, chunk_overlap=25),
+        SentenceSplitter(chunk_size=512, chunk_overlap=50),
         #TitleExtractor(), #for metadata we can use if we have poor performance 
         embed_model,
     ],
