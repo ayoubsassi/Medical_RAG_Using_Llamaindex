@@ -18,7 +18,12 @@ client = qdrant_client.QdrantClient(
     api_key=os.environ["QDRANT_API_KEY"]
     )  
 
-vector_store = QdrantVectorStore(client=client, collection_name="test_store")
+vector_store = QdrantVectorStore(
+                                    client=client, 
+                                    collection_name="test_store_hybrid",
+                                    enable_hybrid=True,
+                                    fastembed_sparse_model="Qdrant/bm25"
+                                    )
 
 #Data loading
 documents = SimpleDirectoryReader("./data").load_data()
